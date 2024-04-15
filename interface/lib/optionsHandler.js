@@ -68,6 +68,25 @@ export class OptionsHandler extends EventEmitter {
   }
 
   /**
+   * Gets whether the animations are enabled or not.
+   * @return {boolean} True if the animations are enabled, otherwise false.
+   */
+  getAnimationsEnabled() {
+    // Uses `!==` false in order to be opt-in by default, since it was added at
+    // a later time.
+    return this.options.animationsEnabled !== false;
+  }
+  /**
+   * Sets whether the animations are enabled or not.
+   * @param {boolean} animationsEnabled True if the animations are enabled,
+   *     otherwise false.
+   */
+  setAnimationsEnabled(animationsEnabled) {
+    this.options.animationsEnabled = animationsEnabled;
+    this.saveOptions();
+  }
+
+  /**
    * Gets the export format used by the export button.
    * @return {ExportFormats} One of the supported export format.
    */
@@ -200,6 +219,40 @@ export class OptionsHandler extends EventEmitter {
       }
     }
     return false;
+  }
+
+  /**
+   * Gets whether the button bar is displayed at the top of the page or not.
+   * @return {boolean} True if the button bar is on the top, otherwise false.
+   */
+  getButtonBarTop() {
+    return this.options.buttonBarTop;
+  }
+  /**
+   * Sets whether the button bar is displayed at the top of the page or not.
+   * @param {boolean} buttonBarTop True if the button bar is on the top, otherwise false.
+   */
+  setButtonBarTop(buttonBarTop) {
+    this.options.buttonBarTop = buttonBarTop;
+    this.saveOptions();
+  }
+
+  /**
+   * Gets whether ads are enabled or not.
+   * @return {boolean} True if ads are enabled, otherwise false.
+   */
+  getAdsEnabled() {
+    // Uses `!==` false in order to be opt-in by default, since it was added at
+    // a later time.
+    return this.options.adsEnabled !== false;
+  }
+  /**
+   * Sets whether the ads are enabled or not.
+   * @param {boolean} adsEnabled True if the ads are enabled, otherwise false.
+   */
+  setAdsEnabled(adsEnabled) {
+    this.options.adsEnabled = adsEnabled;
+    this.saveOptions();
   }
 
   /**

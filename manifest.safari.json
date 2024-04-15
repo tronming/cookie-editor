@@ -1,7 +1,7 @@
 {
 	"manifest_version": 3,
 	"name": "Cookie-Editor",
-	"version": "1.12.2",
+	"version": "1.13.0",
 	"author": "Moustachauve",
 	"description": "Simple powerful Cookie Editor that allow you to quickly create, edit and delete cookies without leaving your tab",
 	"offline_enabled": true,
@@ -38,5 +38,10 @@
 		"48": "icons/cookie-48-filled.png",
 		"128": "icons/cookie-128-filled.png"
 	},
-	"incognito": "split"
+	"incognito": "split",
+	"browser_specific_settings": {
+		"safari": {
+			"strict_min_version": "15.4"
+		}
+	}
 }

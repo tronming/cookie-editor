@@ -17,9 +17,12 @@ document.addEventListener('DOMContentLoaded', async (event) => {
   const permissionHandler = new PermissionHandler(browserDetector);
   const advancedCookieInput = document.getElementById('advanced-cookie');
   const showDevtoolsInput = document.getElementById('devtool-show');
+  const animationsEnabledInput = document.getElementById('animations-enabled');
   const exportFormatInput = document.getElementById('export-format');
   const extraInfoInput = document.getElementById('extra-info');
   const themeInput = document.getElementById('theme');
+  const buttonBarTopInput = document.getElementById('button-bar-top');
+  const adsEnabledInput = document.getElementById('ads-enabled');
 
   await optionHandler.loadOptions();
   themeHandler.updateTheme();
@@ -32,14 +35,20 @@ document.addEventListener('DOMContentLoaded', async (event) => {
    */
   function setFormValues() {
     console.log('Setting up the form');
+    handleAnimationsEnabled();
     advancedCookieInput.checked = optionHandler.getCookieAdvanced();
     showDevtoolsInput.checked = optionHandler.getDevtoolsEnabled();
+    animationsEnabledInput.checked = optionHandler.getAnimationsEnabled();
     exportFormatInput.value = optionHandler.getExportFormat();
     extraInfoInput.value = optionHandler.getExtraInfo();
     themeInput.value = optionHandler.getTheme();
+    buttonBarTopInput.checked = optionHandler.getButtonBarTop();
+    adsEnabledInput.checked = optionHandler.getAdsEnabled();
 
     if (!browserDetector.isSafari()) {
-      document.getElementById('github-sponsor').classList.remove('hidden');
+      document
+        .querySelectorAll('.github-sponsor')
+        .forEach((el) => el.classList.remove('hidden'));
     }
   }
 
@@ -59,6 +68,13 @@ document.addEventListener('DOMContentLoaded', async (event) => {
       }
       optionHandler.setDevtoolsEnabled(showDevtoolsInput.checked);
     });
+    animationsEnabledInput.addEventListener('change', (event) => {
+      if (!event.isTrusted) {
+        return;
+      }
+      optionHandler.setAnimationsEnabled(animationsEnabledInput.checked);
+      handleAnimationsEnabled();
+    });
     exportFormatInput.addEventListener('change', (event) => {
       if (!event.isTrusted) {
         return;
@@ -77,6 +93,18 @@ document.addEventListener('DOMContentLoaded', async (event) => {
       }
       optionHandler.setTheme(themeInput.value);
       themeHandler.updateTheme();
+    });
+    buttonBarTopInput.addEventListener('change', (event) => {
+      if (!event.isTrusted) {
+        return;
+      }
+      optionHandler.setButtonBarTop(buttonBarTopInput.checked);
+    });
+    adsEnabledInput.addEventListener('change', (event) => {
+      if (!event.isTrusted) {
+        return;
+      }
+      optionHandler.setAdsEnabled(adsEnabledInput.checked);
     });
 
     document
@@ -180,5 +208,16 @@ document.addEventListener('DOMContentLoaded', async (event) => {
     // TODO: switch to clipboard API.
     document.execCommand('Copy');
     document.body.removeChild(fakeText);
+  }
+
+  /**
+   * Enables or disables the animations based on the options.
+   */
+  function handleAnimationsEnabled() {
+    if (optionHandler.getAnimationsEnabled()) {
+      document.body.classList.remove('notransition');
+    } else {
+      document.body.classList.add('notransition');
+    }
   }
 });

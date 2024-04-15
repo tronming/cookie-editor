@@ -31,7 +31,11 @@ import { CookieHandlerPopup } from './cookieHandlerPopup.js';
   const storageHandler = new GenericStorageHandler(browserDetector);
   const optionHandler = new OptionsHandler(browserDetector, storageHandler);
   const themeHandler = new ThemeHandler(optionHandler);
-  const adHandler = new AdHandler(browserDetector, storageHandler);
+  const adHandler = new AdHandler(
+    browserDetector,
+    storageHandler,
+    optionHandler,
+  );
   const cookieHandler = window.isDevtools
     ? new CookieHandlerDevtools(browserDetector)
     : new CookieHandlerPopup(browserDetector);
@@ -295,6 +299,7 @@ import { CookieHandlerPopup } from './cookieHandlerPopup.js';
         () => {
           disableButtons = false;
         },
+        optionHandler.getAnimationsEnabled(),
       );
       console.log('after transition');
 
@@ -351,6 +356,7 @@ import { CookieHandlerPopup } from './cookieHandlerPopup.js';
         () => {
           disableButtons = false;
         },
+        optionHandler.getAnimationsEnabled(),
       );
 
       document.getElementById('button-bar-default').classList.remove('active');
@@ -617,6 +623,7 @@ import { CookieHandlerPopup } from './cookieHandlerPopup.js';
           () => {
             disableButtons = false;
           },
+          optionHandler.getAnimationsEnabled(),
         );
       } else {
         containerCookie.appendChild(cookiesListHtml);
@@ -649,6 +656,7 @@ import { CookieHandlerPopup } from './cookieHandlerPopup.js';
         () => {
           disableButtons = false;
         },
+        optionHandler.getAnimationsEnabled(),
       );
     } else {
       containerCookie.appendChild(html);
@@ -696,6 +704,7 @@ import { CookieHandlerPopup } from './cookieHandlerPopup.js';
         () => {
           disableButtons = false;
         },
+        optionHandler.getAnimationsEnabled(),
       );
     } else {
       containerCookie.appendChild(html);
@@ -759,6 +768,7 @@ import { CookieHandlerPopup } from './cookieHandlerPopup.js';
         () => {
           disableButtons = false;
         },
+        optionHandler.getAnimationsEnabled(),
       );
     } else {
       containerCookie.appendChild(html);
@@ -771,6 +781,17 @@ import { CookieHandlerPopup } from './cookieHandlerPopup.js';
   function showVersion() {
     const version = browserDetector.getApi().runtime.getManifest().version;
     document.getElementById('version').textContent = 'v' + version;
+  }
+
+  /**
+   * Enables or disables the animations based on the options.
+   */
+  function handleAnimationsEnabled() {
+    if (optionHandler.getAnimationsEnabled()) {
+      document.body.classList.remove('notransition');
+    } else {
+      document.body.classList.add('notransition');
+    }
   }
 
   /**
@@ -1043,7 +1064,9 @@ import { CookieHandlerPopup } from './cookieHandlerPopup.js';
   async function initWindow(_tab) {
     await optionHandler.loadOptions();
     themeHandler.updateTheme();
+    moveButtonBar();
     handleAd();
+    handleAnimationsEnabled();
     optionHandler.on('optionsChanged', onOptionsChanged);
     cookieHandler.on('cookiesChanged', onCookiesChanged);
     cookieHandler.on('ready', showCookiesForTab);
@@ -1308,6 +1331,8 @@ import { CookieHandlerPopup } from './cookieHandlerPopup.js';
    * @param {Option} oldOptions the options before changes.
    */
   function onOptionsChanged(oldOptions) {
+    handleAnimationsEnabled();
+    moveButtonBar();
     if (oldOptions.advancedCookies != optionHandler.getCookieAdvanced()) {
       document.querySelector('#advanced-toggle-all').checked =
         optionHandler.getCookieAdvanced();
@@ -1317,5 +1342,22 @@ import { CookieHandlerPopup } from './cookieHandlerPopup.js';
     if (oldOptions.extraInfo != optionHandler.getExtraInfo()) {
       showCookiesForTab();
     }
+  }
+
+  /**
+   * Moves the button bar to the top or bottom depending on the user preference
+   */
+  function moveButtonBar() {
+    const siblingElement = optionHandler.getButtonBarTop()
+      ? document.getElementById('pageTitle').nextSibling
+      : document.body.lastChild;
+    document.querySelectorAll('.button-bar').forEach((bar) => {
+      siblingElement.parentNode.insertBefore(bar, siblingElement);
+      if (optionHandler.getButtonBarTop()) {
+        document.body.classList.add('button-bar-top');
+      } else {
+        document.body.classList.remove('button-bar-top');
+      }
+    });
   }
 })();
